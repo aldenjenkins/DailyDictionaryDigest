@@ -35,13 +35,13 @@ def load_words():
     return valid_words
 
 
-all_possible_words = list(load_words().keys())
+ALL_WORDS = list(load_words().keys())
 
 
 def get_random_words(num_words):
     selected_words = []
     for i in range(num_words):
-        word = random.choice(all_possible_words)
+        word = random.choice(ALL_WORDS)
         if word[-2:] != "'s":
             selected_words.append(word)
     return selected_words
@@ -78,7 +78,7 @@ def get_definitions(words, num_requested_definitions):
         get_definition(word)
     while len(definitions) < num_requested_definitions:
         # Sometimes the response is empty from http://wordnetweb.princeton.edu/perl/webwn?s so we programatically retry
-        new_word = random.choice(all_possible_words)
+        new_word = random.choice(ALL_WORDS)
         get_definition(new_word)
     return definitions
 
