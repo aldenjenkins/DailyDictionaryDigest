@@ -16,9 +16,7 @@ from markdown import Markdown
 from smtplib import SMTP
 from PyDictionary import PyDictionary
 
-"""
 
-"""
 parser = argparse.ArgumentParser(
     description='Send an email digest of a random selection of words and their corresponding definitions.'
 )
@@ -85,37 +83,43 @@ def get_definitions(words, num_requested_definitions):
     return definitions
 
 
-password = os.getenv('SMTP_PASS')
-host = os.getenv('SMTP_HOST')
-from_email = os.getenv('EMAIL_FROM')
-to_email = os.getenv('EMAIL_TO')
-error_msg = 'Please add SMTP_PASS, SMTP_HOST, EMAIL_FROM, and EMAIL_TO as env vars'
-assert all([password, host, from_email, to_email]), error_msg
+def main():
+    password = os.getenv('SMTP_PASS')
+    host = os.getenv('SMTP_HOST')
+    from_email = os.getenv('EMAIL_FROM')
+    to_email = os.getenv('EMAIL_TO')
+    error_msg = 'Please add SMTP_PASS, SMTP_HOST, EMAIL_FROM, and EMAIL_TO as env vars'
+    assert all([password, host, from_email, to_email]), error_msg
 
-random_words = get_random_words(num_words=num_requested_words)
-definitions = get_definitions(random_words, num_requested_words)
+    random_words = get_random_words(num_words=num_requested_words)
+    definitions = get_definitions(random_words, num_requested_words)
 
-message = MIMEMultipart("alternative")
-message["Subject"] = f"{datetime.now().strftime('%Y-%m-%d')} Word Definition Digest"
-message["From"] = from_email
-message["To"] = to_email
+    message = MIMEMultipart("alternative")
+    message["Subject"] = f"{datetime.now().strftime('%Y-%m-%d')} Word Definition Digest"
+    message["From"] = from_email
+    message["To"] = to_email
 
-# Create the plain-text and HTML version of your message
-text = format_definitions_into_email(definitions)
-markdowner = Markdown()
-html = markdowner.convert(text)
+    # Create the plain-text and HTML version of your message
+    text = format_definitions_into_email(definitions)
+    markdowner = Markdown()
+    html = markdowner.convert(text)
 
-# Turn these into plain/html MIMEText objects
-part1 = MIMEText(text, "plain")
-part2 = MIMEText(html, "html")
+    # Turn these into plain/html MIMEText objects
+    part1 = MIMEText(text, "plain")
+    part2 = MIMEText(html, "html")
 
-# Add HTML/plain-text parts to MIMEMultipart message
-# The email client will try to render the last part first
-message.attach(part1)
-message.attach(part2)
+    # Add HTML/plain-text parts to MIMEMultipart message
+    # The email client will try to render the last part first
+    message.attach(part1)
+    message.attach(part2)
 
-context = ssl.create_default_context()
-with SMTP(host=host, port=587) as server:
-    server.starttls(context=context)
-    server.login(from_email, password)
-    server.sendmail(from_email, to_email, message.as_string())
+    context = ssl.create_default_context()
+    with SMTP(host=host, port=587) as server:
+        server.starttls(context=context)
+        server.login(from_email, password)
+        server.sendmail(from_email, to_email, message.as_string())
+
+
+if __name__ == "__main__":
+    main()
+
