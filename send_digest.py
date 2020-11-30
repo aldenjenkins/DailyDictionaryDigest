@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import pathlib
 import ssl
 import random
 
@@ -30,7 +31,7 @@ args = parser.parse_args()
 num_requested_words = args.num_words
 
 def load_words():
-    with open('words_dictionary.json') as word_file:
+    with open(str(pathlib.Path(__file__).parent.absolute()) + '/words_dictionary.json') as word_file:
         valid_words = word_file.read()
         valid_words = json.loads(valid_words)
     return valid_words
