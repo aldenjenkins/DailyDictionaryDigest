@@ -95,7 +95,7 @@ def main():
     definitions = get_definitions(random_words, num_requested_words)
 
     message = MIMEMultipart("alternative")
-    message["Subject"] = f"{datetime.now().strftime('%Y-%m-%d')} Word Definition Digest"
+    message["Subject"] = f"{datetime.now().strftime('%Y-%m-%d')} Daily Definition Digest"
     message["From"] = from_email
     message["To"] = to_email
 
